@@ -32,18 +32,6 @@ class kruskals {
 
 }
 
-class nodeStruct {
-    String name;
-    nodeStruct parent;
-    int rank;
-
-    public nodeStruct(String name, nodeStruct parent, int rank) {
-        this.name = name;
-        this.parent = parent;
-        this.rank = rank;
-    }
-}
-
 // Disjoint set data structure
 class DSU {
     //    private nodeStruct[] nodesStruc;
@@ -97,5 +85,18 @@ class DSU {
             rootY.parent = rootX;
             rootX.rank++;
         }
+    }
+}
+
+
+class nodeStruct {
+    String name;
+    nodeStruct parent;
+    int rank;
+
+    public nodeStruct(String name, nodeStruct parent, int rank) {
+        this.name = name;
+        this.parent = parent;
+        this.rank = rank;
     }
 }

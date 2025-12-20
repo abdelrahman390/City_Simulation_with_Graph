@@ -14,29 +14,25 @@ public class City {
     public static City getCityInstance() {
         if(cityInstance == null){
             cityInstance = new City();
-            return cityInstance;
         }
         return cityInstance;
     }
 
-    public City() {
+    private City() {
         Random r= new Random();
-        addNode("A", 50, 100, true);
-        addNode("B", 20, 300, true);
-        addNode("C", 300, 450, true);
-        addNode("D", 650, 456, true);
-        addNode("E", 250, 70, true);
-        addNode("F", 520, 320, true);
-//        for (int i = 0; i < cityNames.length; i++) {
-//            cities[i] = new Node(cityNames[i],r.nextInt(w),r.nextInt(h));
-//        }
+        addNode("A", 50, 60, true);
+        addNode("B", 20, 260, true);
+        addNode("C", 300, 390, true);
+        addNode("D", 650, 413, true);
+        addNode("E", 250, 40, true);
+        addNode("F", 520, 280, true);
 
         // random nodes
         addNode("R1", 120, 180, false);    // Random position
         addNode("R2", 280, 220, false);    // Random position
         addNode("R3", 450, 150, false);    // Random position
         addNode("R4", 380, 380, false);    // Random position
-        addNode("R5", 180, 520, false);    // Random position
+        addNode("R5", 180, 480, false);    // Random position
         addNode("R6", 550, 250, false);    // Random position
         addNode("R7", 90, 320, false);     // Random position
         addNode("R8", 320, 100, false);    // Random position
@@ -115,7 +111,7 @@ public class City {
     }
 
     // return ArrayList<Edge>
-    public returnTwoValuesEdgesAndDouble GetSmallestDistanceBetweenTwoNodesRandomly(){
+    public returnTwoValuesEdgesAndDouble GetShortestDistanceBetweenTwoNodesRandomlyDijkstr(){
         int ramdomStartNode = (int) ((Math.random() * (cities.size())));
         int ramdomEndNode = (int) ((Math.random() * (cities.size())));
         while(ramdomStartNode == ramdomEndNode){
@@ -124,31 +120,12 @@ public class City {
         }
         ArrayList<Node> valueList = new ArrayList<Node>(allNodes.values());
         returnTwoValuesEdgesAndDouble theFinalRoad = DijkstraAlgo.getShortestPath(valueList ,cities.get(ramdomStartNode),  cities.get(ramdomEndNode));
-//        ArrayList<Edge> theFinalEdges = new ArrayList<>();
-//        if(!theFinalRoad.arrayList.isEmpty()){
-//            for (int i = 0; i < theFinalRoad.arrayList.size()-1; i++) {
-//                Edge newEdge = getEdge(theFinalRoad.arrayList.get(i).name, theFinalRoad.arrayList.get(i+1).name);
-//                if(newEdge != null){
-//                    theFinalEdges.add(newEdge);
-//                }
-//            }
-//        }
 
         return new returnTwoValuesEdgesAndDouble(theFinalRoad.arrayList, theFinalRoad.doubleValue);
-//        return theFinalRoad;
     }
 
     public returnTwoValuesEdgesAndDouble buildPipLinesWithKruskalsAlgo() {
         ArrayList<Edge> edges = new ArrayList<>(roadEdges);
-//        double weight;
-//        Edge newV;
-//        for (int i = 0; i < cities.size(); i++) {
-//            for (int j = i+1; j < cities.size(); j++) {
-//                weight = getDistance(cities.get(i).x, cities.get(i).y, cities.get(j).x, cities.get(j).y);
-//                newV = new Edge(cities.get(i).x, cities.get(i).y, cities.get(j).x, cities.get(j).y, cities.get(i).name, cities.get(j).name, weight);
-//                edges.add(newV);
-//            }
-//        }
 
         Set<String> citySet = new HashSet<>(Arrays.asList(cityNames));
         int removedEdges = 0;
@@ -162,10 +139,20 @@ public class City {
 
         kruskals kruskalsAlgo = new kruskals();
         if(!edges.isEmpty()){
-//            returnTwoValuesArrayListAndDouble result = kruskalsAlgo.kruskalsMST(new ArrayList<>(allNodes.values()), edges);
             return kruskalsAlgo.kruskalsMST(new ArrayList<>(allNodes.values()), edges);
         }
         return null;
+    }
+
+    public returnTwoValuesEdgesAndDouble GetShortestPathFloydWarshall(){
+        FloydWarshall f = FloydWarshall.getInstance();
+//        f.getRandomShortestRoadFloydWarshall(new ArrayList<>(allNodes.values()));
+        return f.getRandomShortestRoadFloydWarshall(new ArrayList<>(allNodes.values()));
+    }
+
+    public void deleteAlgorithmsInstances() {
+        FloydWarshall f = FloydWarshall.getInstance();
+        f.deleteInstance();
     }
 
     public void makeEdgesUndirected() {
@@ -173,8 +160,6 @@ public class City {
             edge.isDirected = false;
             edge.toV = null;
             edge.fromV = null;
-//            allNodes.get(edge.edge1).deleteAllOutGoingNodes();
-//            allNodes.get(edge.edge2).deleteAllOutGoingNodes();
             for (Node n : allNodes.get(edge.edge1).outGoingNodes){
                  n.addOutGoingNodes(allNodes.get(edge.edge1));
             }
@@ -189,7 +174,6 @@ public class City {
         for (Edge edge : roadEdges) {
             if(!edge.isDirected){
                 boolean randomInt = random.nextBoolean();
-//                System.out.println(randomInt + " " + allNodes.get(edge.edge1) + " "  + allNodes.get(edge.edge2));
                 if(randomInt){
                     // Out Going from node 2 to node 1
                     edge.toV = edge.edge1;
@@ -236,23 +220,3 @@ public class City {
     }
 
 }
-
-class returnTwoValuesEdgesAndDouble {
-    ArrayList<Edge> arrayList;
-    double doubleValue;
-
-    public returnTwoValuesEdgesAndDouble(ArrayList<Edge> path, double totalDistance) {
-        this.arrayList = path;
-        this.doubleValue = totalDistance;
-    }
-}
-
-//class returnTwoValuesDijkstra {
-//    ArrayList<Edge> arrayList;
-//    double doubleValue;
-//
-//    public returnTwoValuesDijkstra(ArrayList<Edge> nodes, double totalDistance) {
-//        this.arrayList = nodes;
-//        this.doubleValue = totalDistance;
-//    }
-//}

@@ -28,7 +28,6 @@ class DijkstraAlgo {
                 n.isEndNode = true;
             }
         }
-//        System.out.println("Start from: " + Start + " to: " + Target);
 
         while(!priorityQueue.isEmpty()){
             DijkNodeClass node = priorityQueue.poll();
@@ -43,8 +42,6 @@ class DijkstraAlgo {
                 DijkNodeClass next = allNodes.get(n.name);
                     double currToNextCost = City.getDistance(node.node.x, node.node.y, n.x, n.y);
 
-//                    System.out.println( n.cost + " > " + node.cost + currToNextCost );
-//                allNodes.get(n.name).cost
                     if(next.cost > node.cost + currToNextCost){
                         next.cost = node.cost + currToNextCost;
                         next.prev = node.node;
@@ -87,9 +84,7 @@ class DijkNodeClass implements Comparable<DijkNodeClass>{
     public DijkNodeClass(Node node, double cost) {
         this.node = node;
         this.cost = cost;
-//        if(cost == 0){
-            prev = node;
-//        }
+        prev = node;
     }
 
     @Override

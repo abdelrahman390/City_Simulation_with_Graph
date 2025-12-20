@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 public class CityGraphExample extends JPanel {
     City myCity;
-    boolean returnShortesPath = false;
-//    ArrayList<Edge> path;
     boolean kruskal = false;
     boolean dijkstra = false;
+    boolean floydWarshall = false;
     boolean drawEdges = true;
 
     @Override
@@ -15,28 +14,14 @@ public class CityGraphExample extends JPanel {
         super.paintComponent(g);
 
         // Initialize City here when we know the actual size
-//        int width = getWidth();
-//        int height = getHeight();
         myCity = City.getCityInstance();
+//        myCity.GetShortestPathFloydWarshall();
 
         // Enable anti-aliasing for smoother graphics
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if (kruskal) {
-            returnTwoValuesEdgesAndDouble res = myCity.buildPipLinesWithKruskalsAlgo();
-            double distance = res.doubleValue;
-            drawT(g2d, distance);
-
-            // ----------------
-            g2d.setColor(new Color(0, 119, 190));
-            g2d.setStroke(new BasicStroke(3));
-
-
-            for (Edge e : res.arrayList) {
-                g2d.drawLine(e.x1, e.y1, e.x2, e.y2);
-            }
-        } else if (dijkstra || drawEdges) {
+        if(drawEdges){
             // Draw Road Edges
             g2d.setColor(Color.BLACK);
             g2d.setStroke(new BasicStroke(2)); // ← thickness in pixels
@@ -62,15 +47,44 @@ public class CityGraphExample extends JPanel {
                     g2d.setColor(Color.BLACK);
                 }
             }
+        }
 
+        if (kruskal) {
+            returnTwoValuesEdgesAndDouble res = myCity.buildPipLinesWithKruskalsAlgo();
+            double distance = res.doubleValue;
+            drawText(g2d, distance, "kruskal`s");
+
+            // ----------------
+            g2d.setColor(new Color(0, 119, 190));
+            g2d.setStroke(new BasicStroke(3));
+
+
+            for (Edge e : res.arrayList) {
+                g2d.drawLine(e.x1, e.y1, e.x2, e.y2);
+            }
+        } else if (dijkstra) {
             //   Draw Road to the shortest distance between two randomly chosen nodes
-            if (returnShortesPath) {
-                returnTwoValuesEdgesAndDouble res = myCity.GetSmallestDistanceBetweenTwoNodesRandomly();
-                double distance = res.doubleValue;
-                drawT(g2d, distance);
+            returnTwoValuesEdgesAndDouble res = myCity.GetShortestDistanceBetweenTwoNodesRandomlyDijkstr();
+            double distance = res.doubleValue;
+            drawText(g2d, distance, "Dijkstra");
 
-                g2d.setStroke(new BasicStroke(3)); // ← thickness in pixels
-                g2d.setColor(Color.red);
+            g2d.setStroke(new BasicStroke(3)); // ← thickness in pixels
+            g2d.setColor(Color.red);
+            for (Edge e : res.arrayList) {
+                g2d.drawLine(e.x1, e.y1, e.x2, e.y2);
+                if (e.isDirected) {
+                    drawArrow(g2d, e, Color.green, Color.green);
+                }
+            }
+        } else if(floydWarshall){
+            //   Draw Road to the shortest distance between two randomly chosen nodes
+            returnTwoValuesEdgesAndDouble res = myCity.GetShortestPathFloydWarshall();
+            double distance = res.doubleValue;
+            drawText(g2d, distance, "Floyd Warshall");
+
+            g2d.setStroke(new BasicStroke(3)); // ← thickness in pixels
+            g2d.setColor(Color.red);
+            if(res.arrayList != null){
                 for (Edge e : res.arrayList) {
                     g2d.drawLine(e.x1, e.y1, e.x2, e.y2);
                     if (e.isDirected) {
@@ -79,8 +93,6 @@ public class CityGraphExample extends JPanel {
                 }
             }
         }
-
-
 
         // Draw city nodes with names
         ArrayList<Node> data = myCity.getCities();
@@ -119,7 +131,14 @@ public class CityGraphExample extends JPanel {
         ArrayList<Node> data2 = myCity.getRoadNodes();
         for (Node city : data2) {
             int nodeSize = 20;
-            g2d.setColor(Color.GRAY);
+            if(city.isStartNode){
+                g2d.setColor(Color.blue);
+            } else if(city.isEndNode){
+                g2d.setColor(Color.pink);
+            } else {
+                g2d.setColor(Color.GRAY); // Steel blue color
+            }
+//            g2d.setColor(Color.GRAY);
             g2d.fillOval(city.x - nodeSize/2, city.y - nodeSize/2, nodeSize, nodeSize);
 
             // Draw border for the circle
@@ -211,117 +230,116 @@ public class CityGraphExample extends JPanel {
     }
 
     public static void main(String[] args) {
+
         JFrame frame = new JFrame("City Simulation Graph");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 700);
         frame.setLocationRelativeTo(null);
+        frame.setLayout(new BorderLayout());
 
-        // Create header panel
+        // ================= HEADER =================
         JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Use GridBagLayout for better control
-        headerPanel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-
-        // First label
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // ---------- Row 1 : Kruskal ----------
+        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        row1.setOpaque(false);
 
         JLabel headerLabel1 = new JLabel(
                 "Kruskal's Minimum Spanning Tree (MST) Algorithm");
         headerLabel1.setFont(new Font("Arial", Font.BOLD, 16));
         headerLabel1.setForeground(Color.BLUE);
-        headerPanel.add(headerLabel1, gbc);
 
-        gbc.gridx = 2;                 // next column
-        gbc.gridwidth = 1;             // reset span
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.WEST;
-
-        JPanel runPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        runPanel.setOpaque(false);     // keeps header background
         JButton runButton = new JButton("Run");
-        runPanel.add(runButton);
 
+        row1.add(headerLabel1);
+        row1.add(runButton);
 
-        headerPanel.add(runPanel, gbc);
+        // ---------- Row 2 : Edges ----------
+        JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        row2.setOpaque(false);
+
+        JLabel edgesLabel = new JLabel("Road Edges:");
+        edgesLabel.setFont(new Font("Arial", Font.BOLD, 15));
+
+        JButton directedButton = new JButton("Directed Edges");
+        JButton undirectedButton = new JButton("Undirected Edges");
+
+        row2.add(edgesLabel);
+        row2.add(directedButton);
+        row2.add(undirectedButton);
+
+        // ---------- Row 3 : Dijkstra ----------
+        JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        row3.setOpaque(false);
+
+        JLabel headerLabel2 = new JLabel(
+                "Dijkstra's Algorithm — shortest path (Start: Blue, Destination: Pink)");
+        headerLabel2.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JButton shortestPathButton = new JButton("Shortest Distance");
+
+        row3.add(headerLabel2);
+        row3.add(shortestPathButton);
+
+        // ---------- Row 4 : Floyd Warshall ----------
+        JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        row4.setOpaque(false);
+
+        JLabel headerLabel3 = new JLabel(
+                "<html>Floyd Warshall Algorithm — "
+                        + "<span style='color:red;'>Pre-computed</span> "
+                        + "shortest paths</html>"
+        );
+        headerLabel3.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JButton floydWarshallButton = new JButton("Shortest Distance");
+
+        row4.add(headerLabel3);
+        row4.add(floydWarshallButton);
+
+        // Add rows to header
+        headerPanel.add(row1);
+        headerPanel.add(row2);
+        headerPanel.add(row3);
+        headerPanel.add(row4);
+
+        // ================= MAIN PANEL =================
+        CityGraphExample panel = new CityGraphExample();
+
+        // ---------- Actions ----------
+        runButton.addActionListener(e -> panel.runKruskals());
+        directedButton.addActionListener(e -> panel.randomizeEdges());
+        undirectedButton.addActionListener(e -> panel.removeRandomizeEdges());
+        shortestPathButton.addActionListener(e -> panel.dijkstraShortestPath());
+        floydWarshallButton.addActionListener(e -> panel.floydShortestPath());
 
         frame.add(headerPanel, BorderLayout.NORTH);
-
-        // RESET GridBagConstraints after commented sections
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        gbc.weightx = 0;
-        gbc.weighty = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.WEST;
-        // Second label and button
-        gbc.gridy = 1;
-        gbc.gridwidth = 3;
-
-        //  second label
-        JLabel headerLabel2 = new JLabel(
-                "Black lines are the road by Dijkstra's Algorithm, start city: Blue, Destination city: pink"
-        );
-        headerLabel2.setFont(new Font("Arial", Font.BOLD, 16));
-        headerLabel2.setForeground(Color.BLACK);
-
-        headerPanel.add(headerLabel2, gbc);
-
-        gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        gbc.gridx = 0;
-        JButton randomizeButton = new JButton("Directed Edges");
-        headerPanel.add(randomizeButton, gbc);
-
-        // Button 2
-        gbc.gridx = 1;
-        JButton removeRandomizeButton = new JButton("Undirected Edges");
-        headerPanel.add(removeRandomizeButton, gbc);
-
-        // Button 3
-        gbc.gridx = 2;
-        JButton shortestDistanceRandomizeButton = new JButton("Shortest Distance");
-        headerPanel.add(shortestDistanceRandomizeButton, gbc);
-
-
-        // Add action listener to the button
-        CityGraphExample panel = new CityGraphExample();
-        runButton.addActionListener(e -> panel.runKruskals());
-        randomizeButton.addActionListener(e -> panel.randomizeEdges());
-        removeRandomizeButton.addActionListener(e -> panel.removeRandomizeEdges());
-        shortestDistanceRandomizeButton.addActionListener(e -> panel.dijkstraShortestPath());
-
-        frame.add(panel);
+        frame.add(panel, BorderLayout.CENTER);
 
         frame.setVisible(true);
     }
 
-    public void recetAllAlgorithems() {
+    public void resetAllAlgorithms() {
         kruskal = false;
         dijkstra = false;
         drawEdges = false;
-        returnShortesPath = false;
-//        path = null;
+        floydWarshall = false;
+        myCity.deleteAlgorithmsInstances();
     }
 
     // Method to run the kruskals Algorithm
     public void runKruskals() {
-        recetAllAlgorithems();
+        resetAllAlgorithms();
         kruskal = true;
         repaint();  // This will trigger paintComponent() again
     }
 
     // Method to randomize edges and repaint
     private void randomizeEdges() {
-        recetAllAlgorithems();
+        resetAllAlgorithms();
         if (myCity != null) {
             drawEdges = true;
             myCity.makeٌRandomDirectedEdges();  // Call your method
@@ -331,7 +349,7 @@ public class CityGraphExample extends JPanel {
 
     // Method to remove randomized edges and repaint
     private void removeRandomizeEdges() {
-        recetAllAlgorithems();
+        resetAllAlgorithms();
         if (myCity != null) {
             drawEdges = true;
             myCity.makeEdgesUndirected();  // Call your method
@@ -341,20 +359,28 @@ public class CityGraphExample extends JPanel {
 
     public void dijkstraShortestPath() {
         if (myCity != null) {
-            recetAllAlgorithems();
+            resetAllAlgorithms();
             dijkstra = true;
-            returnShortesPath = true;
             drawEdges = true;
             repaint();  // This will trigger paintComponent() again
         }
     }
 
-    public void drawT(Graphics2D g2d, double distance) {
+    public void floydShortestPath() {
+        if (myCity != null) {
+            resetAllAlgorithms();
+            floydWarshall = true;
+            drawEdges = true;
+            repaint();  // This will trigger paintComponent() again
+        }
+    }
+
+    public void drawText(Graphics2D g2d, double distance, String str) {
         String text;
-        if(distance == 0){
-            text = "kruskal Distance: Unreachable";
+        if(distance == 0 || distance == Double.POSITIVE_INFINITY){
+            text = str + " Distance: Unreachable";
         } else {
-            text = String.format("kruskal Distance: %.2f", distance);
+            text = String.format(str + " Distance: %.2f", distance);
         }
 
         g2d.setFont(new Font("Arial", Font.BOLD, 16));
@@ -381,6 +407,7 @@ public class CityGraphExample extends JPanel {
         g2d.setColor(Color.BLACK);
         g2d.drawString(text, x, y);
     }
+
 }
 
 class ColorCircleIcon implements Icon {
