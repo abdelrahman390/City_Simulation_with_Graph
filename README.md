@@ -1,3 +1,4 @@
+### ** This version does not include object-oriented Design or SOLID principles. **
 ## City Graph Visualization & Algorithms Simulator (Java)
 
 
