@@ -32,13 +32,7 @@ class DijkstraNode implements Comparable<DijkstraNode>{
 
     @Override
     public int compareTo(DijkstraNode o) {
-        if(cost < o.cost){
-            return -1;
-        } else if(cost > o.cost){
-            return 1;
-        } else {
-            return 0;
-        }
+        return Double.compare(cost, o.cost);
     }
 
 }

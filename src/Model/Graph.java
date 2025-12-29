@@ -1,17 +1,14 @@
 package Model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.Math.sqrt;
-
 public class Graph {
-    private ArrayList<String> cityNames;
-    private Map<String, Node> allNodes = new HashMap<>();
-    private ArrayList<Node> roadNodes = new ArrayList<Node>();
-    private ArrayList<Edge> roadEdges =  new ArrayList<>();
-    private ArrayList<Node> cities = new ArrayList<>();
+    private final ArrayList<String> cityNames;
+    private final Map<String, Node> allNodes;
+    private final ArrayList<Node> roadNodes;
+    private final ArrayList<Edge> roadEdges;
+    private final ArrayList<Node> cities;
 
     public Graph(ArrayList<String> cityNames, Map<String, Node> allNodes, ArrayList<Node> roadNodes, ArrayList<Edge> roadEdges, ArrayList<Node> cities) {
         this.cityNames = cityNames;

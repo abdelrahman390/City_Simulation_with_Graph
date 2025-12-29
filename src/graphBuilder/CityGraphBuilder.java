@@ -11,7 +11,7 @@ import java.util.Map;
 public class CityGraphBuilder {
     private final ArrayList<String> cityNames = new ArrayList<>();
     private final Map<String, Node> allNodes = new HashMap<>();
-    private final ArrayList<Node> roadNodes = new ArrayList<Node>();
+    private final ArrayList<Node> roadNodes = new ArrayList<>();
     private final ArrayList<Edge> roadEdges =  new ArrayList<>();
     private final ArrayList<Node> cities = new ArrayList<>();
     private final CalcEdgeWeight calcWeightClass = new CalcEdgeWeight();

@@ -7,7 +7,6 @@ import Model.Node;
 import algorithm.AlgorithemsResults.AlgorithmResult;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 
 class cachedResult {

@@ -9,10 +9,9 @@ import java.util.Map;
 // Disjoint set data structure
 class DSU {
     //    private nodeStruct[] nodesStruc;
-    private Map<String, nodeStruct> nodeMap = new HashMap<>();
+    private final Map<String, nodeStruct> nodeMap = new HashMap<>();
 
     public DSU(ArrayList<Node> cities) {
-        int n = cities.size();
 
         for (Node city : cities) {
             nodeStruct newNode = new nodeStruct(city.getName(), null, 0);
@@ -26,14 +25,14 @@ class DSU {
     }
 
     // Find with path compression
-    public nodeStruct find(nodeStruct x) {
+    public nodeStruct find(nodeStruct n) {
         // If x is not the root (its parent is not itself)
 
-        if (x.parent != x) {
+        if (n.parent != n) {
             // Recursively find the root and update parent
-            x.parent = find(x.parent);
+            n.parent = find(n.parent);
         }
-        return x.parent;
+        return n.parent;
     }
 
     // Union by rank

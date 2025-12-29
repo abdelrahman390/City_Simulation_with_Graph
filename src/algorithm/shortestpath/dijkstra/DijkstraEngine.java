@@ -12,7 +12,7 @@ class DijkstraEngine {
         ArrayList<Node> resultNodes = new ArrayList<>();
 
         Set<DijkstraNode> visitedNodes = new HashSet<>();
-        Map<String, DijkstraNode> allNodes = new HashMap<String, DijkstraNode>();
+        Map<String, DijkstraNode> allNodes = new HashMap<>();
         PriorityQueue<DijkstraNode> priorityQueue = new PriorityQueue<>();
 
         for(Node n : nodes){

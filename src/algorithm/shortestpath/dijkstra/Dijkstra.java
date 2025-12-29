@@ -10,7 +10,7 @@ import java.util.*;
 public class Dijkstra implements RunAlgorithm {
 
     public AlgorithmResult run(Graph g) {
-        ArrayList<Node> nodes = new ArrayList<Node>(g.getAllNodes().values());
+        ArrayList<Node> nodes = new ArrayList<>(g.getAllNodes().values());
         Node start = RandomNodeSelector.getRandomNode();
         Node target = RandomNodeSelector.getDeferentRandomNode(start);
 
